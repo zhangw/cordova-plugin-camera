@@ -20,3 +20,7 @@
 # org.apache.cordova.camera
 
 Plugin documentation: [doc/index.md](doc/index.md)
+
+# modify the getImage() 
+
+make the API compatible with Samsung device

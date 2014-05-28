@@ -278,12 +278,30 @@ public class CameraLauncher extends CordovaPlugin implements MediaScannerConnect
           intent.setAction(Intent.ACTION_GET_CONTENT);
           intent.addCategory(Intent.CATEGORY_OPENABLE);
         } else if (this.mediaType == ALLMEDIA) {
-                // I wanted to make the type 'image/*, video/*' but this does not work on all versions
-                // of android so I had to go with the wildcard search.
-                intent.setType("*/*");
-                title = GET_All;
+          // I wanted to make the type 'image/*, video/*' but this does not work on all versions
+          // of android so I had to go with the wildcard search.
+          intent.setType("*/*");
+          title = GET_All;
           intent.setAction(Intent.ACTION_GET_CONTENT);
           intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+          /*
+           * 2014.05.28,the following make it compatible with Samsung device.
+           */
+          // special intent for Samsung file manager
+          Intent sIntent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
+          // if you want any file type, you can skip next line 
+          sIntent.putExtra("CONTENT_TYPE", "*/*");
+          sIntent.addCategory(Intent.CATEGORY_DEFAULT);
+	        Intent chooserIntent;
+          if (getPackageManager().resolveActivity(sIntent, 0) != null){
+            // it is device with samsung file manager
+            chooserIntent = Intent.createChooser(sIntent, new String(title));
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {intent});
+          }
+          else {
+            chooserIntent = Intent.createChooser(intent, new String(title));
+          }
         }
         if (this.cordova != null) {
             this.cordova.startActivityForResult((CordovaPlugin) this, Intent.createChooser(intent,
